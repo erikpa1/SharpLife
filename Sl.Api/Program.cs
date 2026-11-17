@@ -10,7 +10,11 @@ builder.AddBooksStore();
 builder.Services.AddOpenApi();
 
 var connString = "Data Source=SharpLife.db";
-builder.Services.AddSqlite<BooksDbContext>(connString);
+
+builder.Services.AddValidation();
+
+//builder.Services.AddSqlite<BooksDbContext>(connString);
+
 
 var app = builder.Build();
 

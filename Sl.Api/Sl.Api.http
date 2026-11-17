@@ -1,0 +1,6 @@
+@ErikWeb_HostAddress = http://localhost:5003
+
+GET {{ErikWeb_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

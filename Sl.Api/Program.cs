@@ -9,6 +9,9 @@ builder.AddBooksStore();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+var connString = "Data Source=SharpLife.db";
+builder.Services.AddSqlite<BooksDbContext>(connString);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,13 +22,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
 app.MapGet("/weatherforecast", () =>
 {
+    var summaries = new[]
+    {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
     var forecast =  Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (

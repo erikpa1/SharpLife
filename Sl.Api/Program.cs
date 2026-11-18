@@ -1,20 +1,25 @@
 
 using Books;
+using Sl.Api.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddValidation();
 
-builder.AddBooksStore();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.AddSharpLifeStore();
+builder.Services.AddOpenApi(); // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 var connString = "Data Source=SharpLife.db";
 
-builder.Services.AddValidation();
+builder.Services.AddSqlite<SharpLifeDbContext>(connString, optionsAction: options => options.UseSeeding((context, _) =>
+{
 
-//builder.Services.AddSqlite<BooksDbContext>(connString);
 
+    Console.WriteLine("Doing database seeding");
+
+
+
+}));
 
 var app = builder.Build();
 
@@ -34,7 +39,7 @@ app.MapGet("/weatherforecast", () =>
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

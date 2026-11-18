@@ -37,6 +37,31 @@ namespace Sl.Api.Stores.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BookGenres");
+
+                    b.HasDiscriminator().HasValue("Genre");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("Sl.Api.Authors.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -61,6 +86,27 @@ namespace Sl.Api.Stores.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
+                });
+
+            modelBuilder.Entity("Category", b =>
+                {
+                    b.HasBaseType("Genre");
+
+                    b.HasDiscriminator().HasValue("Category");
+                });
+
+            modelBuilder.Entity("SubGenre", b =>
+                {
+                    b.HasBaseType("Genre");
+
+                    b.HasDiscriminator().HasValue("SubGenre");
+                });
+
+            modelBuilder.Entity("Topic", b =>
+                {
+                    b.HasBaseType("Genre");
+
+                    b.HasDiscriminator().HasValue("Topic");
                 });
 
             modelBuilder.Entity("Book", b =>

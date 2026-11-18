@@ -1,27 +1,67 @@
 
-using Books;
+using Microsoft.EntityFrameworkCore;
 using Sl.Api.Stores;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddValidation();
 
-
-builder.AddSharpLifeStore();
-builder.Services.AddOpenApi(); // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-var connString = "Data Source=SharpLife.db";
-
-builder.Services.AddSqlite<SharpLifeDbContext>(connString, optionsAction: options => options.UseSeeding((context, _) =>
+WebApplication BuildApp()
 {
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services.AddValidation();
+
+    builder.AddSharpLifeStore();
+    builder.Services.AddOpenApi(); // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+    var connString = "Data Source=SharpLife.db";
 
 
-    Console.WriteLine("Doing database seeding");
+
+    builder.Services.AddSqlite<SharpLifeDbContext>(
+        connString,
+        optionsAction: options => options.UseSeeding((context, _) =>
+    {
+        //Here you can create seedings
+
+        if (context.Set<Genre>().Any() == false)
+        {
+            context.Set<Genre>().AddRange(
+             new Genre { Id = 0, Name = "nonfiction" },
+             new Genre { Id = 1, Name = "fiction" }
+            );
+
+            context.Set<SubGenre>().AddRange(
+             new SubGenre { Id = 0, Name = "documentary" },
+             new SubGenre { Id = 1, Name = "biography" }
+            );
 
 
+            context.Set<Category>().AddRange(
+             new Category { Id = 0, Name = "nature" }
+            );
 
-}));
+            context.Set<Topic>().AddRange(
+             new Topic { Id = 0, Name = "war" },
+             new Topic { Id = 1, Name = "wildlife" },
+             new Topic { Id = 2, Name = "tech" }
+            );
 
-var app = builder.Build();
+
+        }
+
+    }));
+
+
+    return builder.Build();
+}
+
+
+var app = BuildApp();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<SharpLifeDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

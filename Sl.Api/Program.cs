@@ -1,5 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
 using Sl.Api.Stores;
 
 
@@ -8,12 +11,18 @@ WebApplication BuildApp()
     var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddValidation();
 
+    //Authentification
+
+    builder.Services
+    .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureId"));
+
+    // Platform services
+
     builder.AddSharpLifeStore();
     builder.Services.AddOpenApi(); // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
     var connString = "Data Source=SharpLife.db";
-
-
 
     builder.Services.AddSqlite<SharpLifeDbContext>(
         connString,
@@ -60,7 +69,7 @@ var app = BuildApp();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<SharpLifeDbContext>();
-    db.Database.Migrate();
+    //db.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

@@ -9,13 +9,26 @@ using Sl.Api.Stores;
 WebApplication BuildApp()
 {
     var builder = WebApplication.CreateBuilder(args);
+
+    //Adding local JSON file
+    builder.Configuration.AddJsonFile(
+            "appsettings.local.json",
+            optional: true,
+            reloadOnChange: true
+        );
+
+
+    //This for data validation in Forms and so on [ValidatableType] public class Order
     builder.Services.AddValidation();
 
-    //Authentification
 
+    //Authentification
     builder.Services
     .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureId"));
+
+
 
     // Platform services
 
